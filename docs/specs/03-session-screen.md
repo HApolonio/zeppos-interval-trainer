@@ -47,13 +47,12 @@ Device 390x450; design scale 0.8125, so the design height is about 554. No ring 
 - Last 5 seconds: digits and ring/bar turn amber. Phase change swaps label and color immediately and resets the ring/bar.
 - Widgets are created once; a tick 5 ms after every whole session second calls `setProperty` only when the displayed text or ring degree changed, and emits the alerts for that second (see [architecture](./02-architecture.md#reconciliation)). The tick is cleared in `onDestroy`.
 - Lead-in: after Start, label READY and a 5..1 countdown in the time field, then WORK 1 begins.
-- Stop opens "Stop workout?" with Continue (primary) and Stop. The session keeps running behind the dialog. A back swipe opens the same dialog. Crown and hardware button behavior is not relied upon.
-- Paused: label PAUSED, round line shows the paused phase (`WORK 2 / 5`), frozen time, grey ring/bar, Resume button. No auto-expiry in v1.0; Presets shows a resume card.
-- Wake: `setWakeUpRelaunch(true)` stays as a safety net; the page rebuilds from stored deadlines before the first paint. If the session ended meanwhile, show Completed; if state is untrusted or the app was closed mid-session, show Interrupted.
-- Keep screen on (v1.0, verified on the GTR 4): `setPageBrightTime` and `pauseDropWristScreenOff` for the remaining session time plus 10 s, renewed on resume. A setting may come in v1.1.
+- Stop opens the system modal "Stop workout?" (confirm stops, cancel continues). The session keeps running behind the dialog. A back swipe opens the same dialog. Crown and hardware button behavior is not relied upon.
+- Paused: label PAUSED, round line shows the paused phase (`WORK 2 / 5`), frozen time, grey ring/bar, Resume button. No auto-expiry in v1.0; Presets shows a resume card. While paused the screen stays on for 60 s only.
+- Wake: no `setWakeUpRelaunch`. If the screen turns off and the app exits, the stored session is shown on Presets as Completed or Interrupted (paused ones as Resume).
+- Keep screen on (verified on the GTR 4, not configurable): `setPageBrightTime` and `pauseDropWristScreenOff` for the remaining session time plus 10 s, renewed on resume.
 
 ## Other screens (v1.0, summary)
-- Presets: scrollable cards (`60/15 x 5`, total `6:00`); tap to open the editor with Start; long press for edit or delete; "New preset" at the end.
-- Editor: Work, Rest, Rounds rows with +/- or pickers, live total, validation message, Start.
-- Completed: "Done", total time, Again and Home.
-- Interrupted: cause text, Restart and Discard.
+- Presets: scrollable cards (name `60/15 x 5`, caption `Total 6:00`); tap opens the editor; "New preset" at the end creates a default preset and opens it. A card on top shows a stored session: Resume (paused), Completed or Interrupted.
+- Editor: Work, Rest, Rounds rows with -/+ buttons (see `stepConfigValue`), live total, Start, Delete (below the fold on round screens, confirmed by a modal). Every change is saved at once.
+- Result: COMPLETED with Again and Home, or INTERRUPTED with Restart and Discard; the stored session is cleared by any of these buttons.

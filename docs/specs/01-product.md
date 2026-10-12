@@ -32,11 +32,11 @@ Motivation: the interval apps tried from the Zepp store vibrate too faintly, esp
 - The last phase uses the same countdown and ends with a completion event instead of a transition.
 - Sound (v1.0, primary): a bundled 4-beep MP3 starts 3 s before every phase change, the start and the completion, so its last beep lands on the change. Played with `@zos/media` from the page. Never change the system volume.
 - Vibration (v1.0, support): every warning (lead-in, work and rest) uses the strong pulsing pattern for 0.8 s; start and transitions use the notification pattern; completion uses the strong pattern for 1.5 s.
-- v1.1 adds independent sound and vibration toggles and a warning toggle.
+- v1.1 settings (`Settings` card on Presets, stored locally, applied when a session starts): Sound (countdown beeps), Vibration (all pulses), 5-1 s vibration (only the countdown pulses; start, transition and completion still vibrate). All default to on. The screen is always kept on during a session: tested on the GTR 4, a session with the screen allowed to sleep is lost when the wrist is raised (the app does not come back).
 - A late tick never replays old warnings: only the latest due event inside the grace window is emitted (see [architecture](./02-architecture.md#reconciliation)).
 
 ## Presets
-- Built-in default "Classic" 60/15 x 5. Users can create, edit and delete presets, limit 20.
+- The default preset `60/15 x 5` is seeded when nothing is stored (and restored if the last preset is deleted). Users can create, edit and delete presets, limit 20.
 - Names are generated from the values (for example `60/15 x 5`). Custom names need a phone companion and are out of scope for v1.
 - Stored locally, versioned (`schemaVersion`), no cloud. Removed when the app is uninstalled.
 

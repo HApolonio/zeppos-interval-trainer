@@ -6,7 +6,7 @@
     "appType": "app",
     "version": {
       "code": 1,
-      "name": "0.1.0"
+      "name": "1.0.0"
     },
     "icon": "icon.png",
     "vender": "Hugo Apolónio",
@@ -29,8 +29,11 @@
       "module": {
         "page": {
           "pages": [
-            "page/gt/spike/index.page",
-            "page/gt/home/index.page"
+            "page/gt/home/index.page",
+            "page/gt/editor/index.page",
+            "page/gt/session/index.page",
+            "page/gt/result/index.page",
+            "page/gt/settings/index.page"
           ]
         }
       },

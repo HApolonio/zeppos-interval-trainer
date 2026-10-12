@@ -4,6 +4,7 @@ import {
   VIBRATOR_SCENE_STRONG_REMINDER,
 } from "@zos/sensor";
 import { create, id } from "@zos/media";
+import { SOUND_AT_SECONDS_LEFT } from "../lib/settings.js";
 
 // B3 on the GTR 4: SHORT_* and DURATION_LONG barely perceptible; the maintainer prefers the strong pattern
 // for every warning. STRONG_REMINDER pulses until stop(), so it always has a stop time.
@@ -41,8 +42,6 @@ export function stopVibration() {
 
 // Maintainer-provided countdown sound: 4 beeps one second apart, ~4.1 s (MP3, 48 kHz, 64 kbps).
 export const SOUND_FILE = "audio/interval-beep.mp3";
-// Starting 3 s before the phase end puts the last beep on the change (confirmed in FG, build 6).
-export const SOUND_AT_SECONDS_LEFT = 3;
 
 export function shouldPlaySound(event) {
   return event.kind === "warning" && event.secondsLeft === SOUND_AT_SECONDS_LEFT;
@@ -74,8 +73,4 @@ export function playSound(onPrepared) {
 
 export function stopSound() {
   if (player) player.stop();
-}
-
-export function systemVolume() {
-  return getPlayer().getVolume();
 }

@@ -13,19 +13,23 @@ Alarm-started single-execution services gave a near-imperceptible vibration, no 
 
 ## Platform constraints (documented)
 - The system turns the screen off and exits a mini program about 10 s later. A session page prevents this with `setPageBrightTime` (screen on for the session plus a margin; reset when the page is destroyed) and `pauseDropWristScreenOff` (same duration).
-- `setWakeUpRelaunch(true)` reopens the page if the screen still turns off.
+- The session page does not use `setWakeUpRelaunch` (see Navigation and recovery).
 - API ceiling is 3.5.
 
 ## Modules (planned)
 | Module | Role |
 |---|---|
 | `lib/interval-engine.js` | Pure (B2): `LIMITS`, `DEFAULT_CONFIG`, `LEAD_IN_SECONDS`, `validateConfig`, `totalSeconds`, `buildTimeline`, `buildEvents(timeline, leadInSec)`, `getPosition`, `createSession`, `pauseSession`, `resumeSession`, `stopSession`, `completeSession`, `interruptSession`, `elapsedMs`, `reconcile`. `pendingEvents` and `eventTimeSec` are left from the alarm design and unused. |
-| `utils/session-store.js` | Persistence adapter for presets and the active session (versioned JSON, fresh instance per access) |
+| `lib/presets.js` | Pure (C1): `parsePresets`/`serializePresets` (corrupt data gives the default list, invalid entries dropped, max 20), `addPreset`, `updatePreset`, `removePreset` (never leaves the list empty), `stepConfigValue` (+/- steps: rounds by 1; seconds by 5 below 2:00, by 15 below 10:00, by 60 above), `presetName`, `formatTotal`, `formatClock` |
+| `lib/session-recovery.js` | Pure (C1): `parseSession`/`serializeSession` (null on corrupt or foreign data), `recoverSession(session, nowMs)` giving `none`, `paused`, `completed` or `interrupted` |
+| `lib/settings.js` | Pure (C3): `DEFAULT_SETTINGS`, `parseSettings`/`serializeSettings` (each key falls back to its default), `toggleSetting`, `alertPlan(settings, event)` giving `{vibrate, sound}` |
+| `utils/session-store.js` | Persistence adapter for presets, the active session and settings (versioned JSON, fresh instance per access) |
+| `utils/navigation.js` | `@zos/router` wrapper: `open` (push), `openInPlace` (replace), `goBack`, `readParams` |
 | `utils/alerts.js` | Vibration patterns (stopped by timer where needed) and one shared audio player |
 | `page/gt/*` | Screens (see [session screen](./03-session-screen.md)) |
 
 ## Data model
-Session (persisted): `schemaVersion`, `id`, `generation`, `config {workSec, restSec, rounds}`, `leadInSec`, `status` (`running`, `paused`, `completed`, `cancelled`, `interrupted`), `originMs` (wall-clock time of timeline second 0), `pausedAtMs` or null, `lastEventIndex` (-1 before the first event).
+Session (persisted): `schemaVersion`, `id`, `generation`, `config {workSec, restSec, rounds}`, `status` (`running`, `paused`, `completed`, `cancelled`, `interrupted`), `originMs` (wall-clock time of timeline second 0), `pausedAtMs` or null, `lastEventIndex` (-1 before the first event). The lead-in length is the constant `LEAD_IN_SECONDS`, not stored.
 - `originMs` is always on a whole UTC second (`createSession` rounds the start up) so the tick lands on session seconds.
 - `elapsedMs = (pausedAtMs ?? nowMs) - originMs`.
 - Timeline phase: `{type: work|rest, round, startSec, endSec}`; a phase covers `[startSec, endSec)`.
@@ -47,6 +51,14 @@ Session (persisted): `schemaVersion`, `id`, `generation`, `config {workSec, rest
 - One `@zos/media` player per process, created on first use; each sound is `stop()` + `prepare()` and starts on `PREPARE`. Creating a player per sound only played once (B3 build 6).
 - `VIBRATOR_SCENE_STRONG_REMINDER` pulses until `stop()`, so it is always stopped by a timer (0.8 s for warnings, 1.5 s for completion).
 - Sound file: `assets/gt.*/audio/interval-beep.mp3` (maintainer-provided, 4 beeps, ~4.1 s, MP3 48 kHz 64 kbps), started 3 s before each change.
+
+## Navigation and recovery
+Pages are destroyed on `push` and rebuilt on `back` (Routing guide), so state travels in router params and storage. Stack: Home -> Editor (push) -> Session (replace) -> Result (replace) -> Home (back). Home also pushes Session (resume) and Result (stored session card).
+- The session is saved at start, pause, resume and completion; stopping clears it. Home runs `recoverSession` on every build and saves a changed end state.
+- A running session found on open is never resumed: finished means Completed, anything else Interrupted. A paused session stays resumable (no expiry); a paused session with the clock moved back is Interrupted.
+- The session page ends in Interrupted when the clock jumps back more than 2 s between ticks or when resume finds the clock before the pause time.
+- On completion the page stays 1.7 s so the 1.5 s vibration and the last beep are not cut by the page change.
+- No `setWakeUpRelaunch` on the session page: a relaunch could reopen it with its start params and begin a new run.
 
 ## Open points
 - Battery cost of keeping the screen on for a full session (soak run in the hardware gate).
@@ -77,7 +89,11 @@ Status values: `documented`, `simulator`, `hardware` (with report link), `exclud
 | `@zos/ui` `TEXT`, `BUTTON` (`setProperty`) | 2.0 | none | no | hardware |
 | `@zos/display` `setPageBrightTime` | 2.0 | none listed | no | hardware: screen stayed on for the whole run |
 | `@zos/display` `pauseDropWristScreenOff` | 2.1 | none listed | no | hardware: wrist-down did not turn the screen off |
-| `@zos/display` `setWakeUpRelaunch` | 2.0 | none listed | no | hardware: page reopened on wake |
+| `@zos/display` `setWakeUpRelaunch` | 2.0 | none listed | no | hardware in the spike (page reopened on wake); not used by the session page |
+| `@zos/display` `resetDropWristScreenOff` | 2.1 | none listed | no | documented; called when the session page is destroyed |
+| `@zos/router` `push`, `replace`, `back` | 2.0 | none | no | documented; params reach `onInit` as a string or JSON |
+| `@zos/interaction` `createModal`, `onGesture`, `offGesture` | 2.0 | none | no | documented; back swipe intercepted with `GESTURE_RIGHT` and a `true` return, unverified on the watch |
+| `@zos/ui` `FILL_RECT` (square progress bar, `setProperty` with `MORE`) | 2.0 | none | no | documented |
 | `@zos/app` `queryPermission`, `requestPermission` | 3.0 | none | no | not used |
 | `@zos/app-service` `start` (continuous) | 3.0 | `device:os.bg_service` | n/a | documented, not planned |
 | `SystemSounds` | 3.6 | n/a | n/a | excluded |

@@ -4,12 +4,12 @@ A work/rest interval timer (Tabata style) for Zepp OS watches. Set the work time
 
 Why another timer: the interval apps tried from the Zepp store vibrate too faintly and cannot play a sound. This one keeps the app open with the screen on during the session, which on the Amazfit GTR 4 is what makes sound and strong vibration possible.
 
-![Status](https://img.shields.io/badge/status-in%20development-orange)
+![Status](https://img.shields.io/badge/status-submitted%20to%20Zepp%20Store-blue)
 ![Zepp OS](https://img.shields.io/badge/Zepp%20OS-API%203.0%E2%80%933.5-blue)
 ![Devices](https://img.shields.io/badge/devices-GTR%204%20%7C%20GTS%204-lightgrey)
 ![License](https://img.shields.io/badge/license-ISC-green)
 
-## Features (planned for 1.0)
+## Features
 
 - Configurable work (6 s to 60 min), rest (6 s to 60 min) and rounds (1 to 99)
 - 5 s get-ready countdown before the first work phase
@@ -18,10 +18,11 @@ Why another timer: the interval apps tried from the Zepp store vibrate too faint
 - Screen kept on for the whole session
 - Pause, resume and stop with confirmation
 - Local presets, auto-named from their values (for example `60/15 x 5`)
+- Settings: sound, vibration and the 5-1 s vibration can each be switched off
 - Round (GTR 4) and square (GTS 4) layouts
 - Fully offline, no phone companion app required
 
-Sound and vibration toggles follow in 1.1. See the [roadmap](docs/specs/05-roadmap.md).
+See the [roadmap](docs/specs/05-roadmap.md).
 
 ## Default session
 
@@ -54,15 +55,15 @@ Details are in the [architecture spec](docs/specs/02-architecture.md).
 
 ## Known limitations
 
-- The app must stay open during a session; closing it ends the alerts.
-- Keeping the screen on uses more battery (to be measured).
+- The app must stay open during a session; closing it ends the alerts. If the screen turns off, the app does not come back when the wrist is raised.
+- First soak: battery 53% to 51% over approximately 30 minutes with sound and vibration on; all alerts retained their intensity. An always-on watch-face reference used approximately 0.5 percentage points, but the display modes differ. This single run is not a precise battery-life estimate. See the [report](docs/test-reports/2026-10-03-b3-spike-short-session.md#production-session-soak-follow-up-2026-10-12).
 
 ## Supported devices
 
 | Device | Screen | Status |
 |---|---|---|
 | Amazfit GTR 4 | Round 466 x 466 | Primary target, Zepp OS 3.5 (API level 3.5) |
-| Amazfit GTS 4 | Square 390 x 450 | Secondary target, layout proposed, not yet tested |
+| Amazfit GTS 4 | Square 390 x 450 | Tested by the maintainer; no apparent problems (2026-10-12) |
 
 The app uses no API above level 3.5.
 
@@ -74,9 +75,9 @@ The app uses no API above level 3.5.
 | Pure interval engine with unit tests (`lib/`) | Done |
 | Hardware tests on the watch: alerts, sound, keep-screen-on | Foreground approach chosen; final runs in progress |
 | Audio with bundled MP3 | Done (works from the open app) |
-| Storage for presets and session recovery | Planned |
-| Screens: presets, editor, session, completed | Planned |
-| Release 1.0 | Planned |
+| Storage for presets and session recovery | Done |
+| Screens: presets, editor, session, result, settings | Done (tested on the GTR 4) |
+| Release 1.0 | Submitted to the Zepp Store (confirmed 2026-10-12) |
 
 Live status and decisions: [docs/PLAN.md](docs/PLAN.md).
 

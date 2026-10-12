@@ -28,7 +28,7 @@
 - The original sample `zeppos-timer-app` is a separate repository kept as a reference.
 
 ## Project configuration (milestone B1, done)
-- `app.json`: appId 1129777, name "Interval Trainer", version 0.1.0, permissions device info, local storage and `device:os.alarm`. The spike page and service are registered in B3.
+- `app.json`: appId 1129777, name "Interval Trainer", permissions device info and local storage; pages home, editor, session, result, settings.
 - `package.json` scripts: `npm run dev`, `npm run preview`, `npm run build` (wrap `zeus`), `npm test` (`node --test`, default patterns, finds `tests/*.test.mjs`).
 - `package-lock.json` is tracked; run `npm install` after cloning.
 - `zeus build` produces `dist/<appId>-Interval_Trainer-<version>-<timestamp>.zab` and prints a notice about intermediate products (`zeus prune --ip` removes them); no action needed for development.
