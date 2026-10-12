@@ -12,7 +12,7 @@ Measured on the GTR 4 ([report](../test-reports/2026-10-03-b3-spike-short-sessio
 
 The maintainer chose the foreground approach: sound first, vibration as support, screen on during the session, no alerts with the app closed. The background spike code (alarm service, alarm param) was removed.
 
-## Spike (temporary app entry `page/gt/spike`)
+## Spike (historical; the spike page was removed on 2026-10-10 and lives in git history)
 - **Start**: 5 s lead-in (`READY 5..1`), then `SPIKE_CONFIG` (now the default 60/15 x 5, 60 events with the lead-in). **Stop** ends the run and stops sound and vibration.
 - The page keeps the screen on for the session plus 10 s (`setPageBrightTime`, `pauseDropWristScreenOff`; shown as `Keep on <bright>/<wrist> <s>`), ticks 5 ms after each whole session second (`setTimeout`), runs `reconcile` with no early tolerance and alerts through `utils/alerts.js`.
 - Sound: `interval-beep.mp3` (4 beeps) starts at every warning with 3 s left (lead-in, every phase end, completion) from one shared player.
@@ -21,6 +21,8 @@ The maintainer chose the foreground approach: sound first, vibration as support,
 
 ## Remaining acceptance runs (foreground)
 Runs 1-4 passed on 2026-10-07 with the previous sound file (see the report); repeat run 2 once with `interval-beep.mp3`.
+
+Scenario 5 passed by maintainer observation on the GTR 4 on 2026-10-12: five default sessions, all alerts with consistent intensity, battery 53% to 51% over approximately 30 minutes. The always-on watch-face reference used approximately 0.5 percentage points; it is not an equivalent full-brightness screen baseline. Firmware, installed build and instrumented timing were not supplied for this run. See the [soak follow-up](../test-reports/2026-10-03-b3-spike-short-session.md#production-session-soak-follow-up-2026-10-12). Scenario 6 remains unreported.
 
 | # | Scenario | Criterion |
 |---|---|---|

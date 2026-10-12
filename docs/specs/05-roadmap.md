@@ -13,9 +13,10 @@ Versions and the exit criteria for each. Milestone ids refer to [docs/PLAN.md](.
 | 2.x | Extras | History and stats, heart-rate display, compact always-on view, custom sounds transferred from the phone, pt-PT and other languages | Each item gets its own spec and gate |
 
 ## Release 1.0 checklist
-- [ ] `app.json`: real `appId`, version, only needed permissions
-- [ ] README with install, usage and known limitations
+- [x] `app.json`: real `appId`, version 1.0.0, only needed permissions (device info, local storage)
+- [x] README with install, usage and known limitations
 - [ ] Reports for every gate scenario in `docs/test-reports/`
 - [ ] GTS 4 layout checked in the simulator (and on hardware if available)
-- [ ] License and attribution reviewed for any code adapted from the sample
-- [ ] Bundled sound licensed for redistribution (own, CC0, or confirmed license)
+- [x] License and attribution reviewed (no code adapted from the sample)
+- [x] Bundled sound licensed for redistribution (own work)
+- [ ] Store icon 240x240 and 3+ screenshots 360x360; texts in [store-listing](../store-listing.md)

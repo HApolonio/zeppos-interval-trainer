@@ -73,3 +73,35 @@ The maintainer chose the foreground approach (sound first, vibration as support,
 
 ### After build 8
 The default-session run passed gate runs 1-4. The maintainer asked for the strong pattern on every warning (also before rest) and replaced the sound with `interval-beep.mp3`; the old Pixabay file was removed. Pending: one run with the new sound, the soak with battery, and the Bluetooth-off run.
+
+## Production session soak follow-up (2026-10-12)
+
+- App version / build: 1.0 release context; installed version and build not reported.
+- Device: Amazfit GTR 4 (confirmed by the maintainer). Firmware, API_LEVEL and phone / Zepp app version not reported for this run; do not assume the earlier metadata applies.
+- Tester: maintainer.
+- Goal: foreground gate scenario 5, five consecutive default sessions with sound and vibration enabled.
+- Setup: (60 s work / 15 s rest x 5 rounds) x 5 executions, approximately 30 minutes, app in the foreground with its screen kept on.
+
+| Scenario | Expected | Observed | Result |
+|---|---|---|---|
+| Five consecutive default sessions | No missing alerts; record battery consumption and a comparison | All alerts fired with consistent intensity throughout; battery 53% to 51% | pass (maintainer observation) |
+| Approximately 30-minute reference | Record a baseline | Always-on watch face showing the time, native timer running in the background to signal the end; reported battery consumption approximately 0.5 percentage points | recorded; not an equivalent full-brightness screen baseline |
+
+### Timing and alert evidence
+
+Five sessions with the 5 s lead-in plan 300 events and 50 countdown sound sequences. The maintainer reported all alerts firing, with no loss of intensity. These are observations, not instrumented counts: duplicate counts, event timestamps and lateness were not collected.
+
+### Battery comparison
+
+- Foreground session: 2 percentage points over approximately 30 minutes (53% to 51%).
+- Always-on reference: approximately 0.5 percentage points over approximately 30 minutes; initial and final readings and measurement method not supplied.
+- Observed difference: approximately 1.5 percentage points. The two display modes differ, so this does not isolate the app's CPU, sound or vibration consumption.
+- Battery readings are coarse and this is a single run; do not extrapolate precise runtime or attribute the difference to one component.
+
+### Conclusion
+
+Pass for foreground soak scenario 5 on the GTR 4 on reported alert continuity and recorded battery consumption. No intensity degradation was reported. This does not establish new timing accuracy measurements or close the Bluetooth-off scenario. Firmware and installed build remain unreported.
+
+### GTS 4 compatibility follow-up
+
+On 2026-10-12 the maintainer also confirmed testing the app on the Amazfit GTS 4 (square screen), with no apparent problems. This is a general usability observation, not a GTS 4 soak or instrumented timing result. Firmware, API_LEVEL, installed build and individual scenarios were not supplied.

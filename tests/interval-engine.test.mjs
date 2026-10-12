@@ -244,7 +244,6 @@ describe("sessions", () => {
       originMs: T0 + 4_000,
       pausedAtMs: null,
       lastEventIndex: -1,
-      alarmIds: [],
     });
     assert.equal(createSession({ id: "a", config, startMs: T0 }).originMs, T0);
   });
